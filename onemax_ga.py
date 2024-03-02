@@ -54,7 +54,7 @@ class OneMaxGA(GeneticAlgorithm):
         Returns:
             int: Fitness value.
         """
-        return sum(chromosome)
+        #TODO 
     
     def calculate_cumulative_probabilities(self) -> List[float]:
         """
@@ -63,10 +63,8 @@ class OneMaxGA(GeneticAlgorithm):
         Returns:
             List[float]: Cumulative probabilities.
         """
-        total_fitness = sum(self.evaluate_fitness(individual) for individual in self.population)
-        probabilities = [self.evaluate_fitness(individual) / total_fitness for individual in self.population]
-        cumulative_probabilities = [sum(probabilities[:i + 1]) for i in range(self.population_size)]
-        return cumulative_probabilities
+        #TODO 
+
 
     def select_parents(self) -> List[List[int]]:
         """
@@ -93,10 +91,7 @@ class OneMaxGA(GeneticAlgorithm):
         
 
         if random.uniform(0, 1) < self.crossover_prob:
-            crossover_point = random.randint(1, self.chromosome_length - 1)
-            offspring1 = parent1[:crossover_point] + parent2[crossover_point:]
-            offspring2 = parent2[:crossover_point] + parent1[crossover_point:]
-            return offspring1, offspring2
+            #TODO 
         else:
             return parent1, parent2
     
@@ -114,7 +109,7 @@ class OneMaxGA(GeneticAlgorithm):
         mutated_chromosome = chromosome.copy()
         for i in range(self.chromosome_length):
             if random.uniform(0, 1) < self.mutation_rate:
-                mutated_chromosome[i] = 1 - mutated_chromosome[i]  # Bit flip
+            #TODO  # Bit flip
         return mutated_chromosome
 
     def elitism(self) -> List[List[int]]:
@@ -125,7 +120,7 @@ class OneMaxGA(GeneticAlgorithm):
             new_population (List[List[int]]): The new population after crossover and mutation.
         """
         sorted_population = sorted(self.population, key=self.evaluate_fitness, reverse=True)
-        return sorted_population[0:self.elitism_num]
+        #TODO #return the best elitism_num 
 
 
     def run(self, max_generations):
@@ -135,7 +130,7 @@ class OneMaxGA(GeneticAlgorithm):
                 parent1, parent2 = self.select_parents()
                 offspring1, offspring2 = self.crossover(parent1, parent2)
                 offspring1 = self.mutate(offspring1)
-                offspring2 = self.mutate(offspring2)
+                offspring2 = #TODO
                 new_population.extend([offspring1, offspring2])
 
             new_population = new_population[0:self.population_size-self.elitism_num] # make sure the new_population is the same size of original population - the best individuals we will append next
@@ -148,15 +143,18 @@ class OneMaxGA(GeneticAlgorithm):
         return best_solution
 
 if __name__ == "__main__":
-    population_size = 40
-    chromosome_length = 10
+    population_size = 200
+    chromosome_length = 40
     crossover_prob = 0.7
-    mutation_rate = 0.01
-    elitism_num = 1
-    max_generations = 5
-
+    mutation_rate = 0.07
+    elitism_num = 2
+    max_generations = 150
+    start = time.time()
     onemax_ga = OneMaxGA(population_size, chromosome_length,crossover_prob, mutation_rate,elitism_num)
     best_solution = onemax_ga.run(max_generations)
+    ga_time = time.time()-start
+    print("GA Solution Time:",round(ga_time,1),'Seconds')
+
 
     print(f"Best solution: {best_solution}")
     print(f"Fitness: {onemax_ga.evaluate_fitness(best_solution)}")
