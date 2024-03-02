@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from typing import List
 
 class GeneticAlgorithm(ABC):
     """
@@ -7,7 +7,16 @@ class GeneticAlgorithm(ABC):
     """
 
     @abstractmethod
-    def initialize_population(self):
+    def create_individual(self) -> List[int]:
+        """
+        Create a new individual (random bitstring).
+
+        Returns:
+            List[int]: A newly created individual.
+        """
+
+    @abstractmethod
+    def initialize_population(self) -> List[List[int]]:
         """
         Initialize the population of individuals.
 
@@ -17,7 +26,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def evaluate_fitness(self, chromosome):
+    def evaluate_fitness(self, chromosome: List[int]) -> int:
         """
         Evaluate the fitness of an individual.
 
@@ -30,7 +39,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def select_parents(self):
+    def select_parents(self) -> List[List[int]]:
         """
         Select two parent chromosomes from the population.
 
@@ -40,7 +49,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def crossover(self, parent1, parent2):
+    def crossover(self, parent1: List[int], parent2: List[int]) -> List[List[int]]:
         """
         Perform crossover (recombination) between two parents.
 
@@ -54,7 +63,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def mutate(self, chromosome):
+    def mutate(self, chromosome: List[int]) -> List[int]:
         """
         Apply mutation to an individual.
 
@@ -67,7 +76,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def elitism(self, new_population):
+    def elitism(self) -> List[List[int]]:
         """
         Apply elitism to the population (e.g., keep the best individuals).
 
