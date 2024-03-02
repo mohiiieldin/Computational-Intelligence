@@ -41,6 +41,7 @@ class OneMaxGA(GeneticAlgorithm):
         Returns:
             List[List[int]]: Initial population.
         """
+
         return [self.create_individual() for _ in range(self.population_size)]
 
     def evaluate_fitness(self, chromosome: List[int]) -> int:
@@ -130,26 +131,29 @@ class OneMaxGA(GeneticAlgorithm):
     def run(self, max_generations):
         for generation in range(max_generations):
             new_population = []
-            while len(new_population) < (self.population_size - self.elitism_num):
+            while len(new_population) < self.population_size:
                 parent1, parent2 = self.select_parents()
                 offspring1, offspring2 = self.crossover(parent1, parent2)
                 offspring1 = self.mutate(offspring1)
                 offspring2 = self.mutate(offspring2)
                 new_population.extend([offspring1, offspring2])
 
+            new_population = new_population[0:self.population_size-self.elitism_num] # make sure the new_population is the same size of original population - the best individuals we will append next
             best_individuals = self.elitism()
-            self.population = new_population.extend(best_individuals)
+            new_population.extend(best_individuals)
+            self.population = new_population
+
 
         best_solution = max(self.population, key=self.evaluate_fitness)
         return best_solution
 
 if __name__ == "__main__":
-    population_size = 20
+    population_size = 40
     chromosome_length = 10
     crossover_prob = 0.7
     mutation_rate = 0.01
     elitism_num = 1
-    max_generations = 100
+    max_generations = 5
 
     onemax_ga = OneMaxGA(population_size, chromosome_length,crossover_prob, mutation_rate,elitism_num)
     best_solution = onemax_ga.run(max_generations)
