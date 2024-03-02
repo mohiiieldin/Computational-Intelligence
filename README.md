@@ -6,6 +6,6 @@
 5. Brute force vs genetic solution to one max problem
 
 ## Related Links:
-https://www.youtube.com/watch?v=5NdMnlt2keE 
+https://www.youtube.com/watch?v=5NdMnlt2keE Main principles of evolution 
 
-https://www.youtube.com/watch?v=-X8Xfl0JdTQ
+https://www.youtube.com/watch?v=-X8Xfl0JdTQ How to determine the difference between science and pseud science (in case you are questioning the validity of the theory of evolution)
