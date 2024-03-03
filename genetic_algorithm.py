@@ -14,6 +14,7 @@ class GeneticAlgorithm(ABC):
         Returns:
             List[int]: A newly created individual.
         """
+        pass
 
     @abstractmethod
     def initialize_population(self) -> List[List[int]]:
