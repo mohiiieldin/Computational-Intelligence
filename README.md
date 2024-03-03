@@ -3,8 +3,7 @@
 2. Intro to biological evolution
 3. Why you should get out of notebooks
 4. Clean code basic principles 
-5. Brute force vs genetic solution to one max problem
-6. Assignments
+5. Assignments
 
 # Resources:
 1. https://induraj2020.medium.com/use-of-optimization-algorithms-in-real-world-in-different-industries-173d01ca6deb
