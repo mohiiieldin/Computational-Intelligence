@@ -2,6 +2,7 @@ from genetic_algorithm import GeneticAlgorithm
 import random
 import time
 from typing import List
+import matplotlib.pyplot as plt
 
 
 class OneMaxGA(GeneticAlgorithm):
@@ -166,25 +167,78 @@ class OneMaxGA(GeneticAlgorithm):
             best_individuals = self.elitism()
             new_population.extend(best_individuals)
             self.population = new_population
-
+        plt.hist(
+            [self.evaluate_fitness(individual) for individual in self.population],
+            bins=10,
+        )
         best_solution = max(self.population, key=self.evaluate_fitness)
+        plt.show()
         return best_solution
 
 
 if __name__ == "__main__":
-    population_size = 200
-    chromosome_length = 40
-    crossover_prob = 0.7
-    mutation_rate = 0.07
+    population_size = 5
+    chromosome_length = 4
+    crossover_prob = 0.6
+    mutation_rate = 0.05
     elitism_num = 2
-    max_generations = 150
+    max_generations = 100
     start = time.time()
     onemax_ga = OneMaxGA(
         population_size, chromosome_length, crossover_prob, mutation_rate, elitism_num
     )
-    best_solution = onemax_ga.run(max_generations)
-    ga_time = time.time() - start
-    print("GA Solution Time:", round(ga_time, 1), "Seconds")
 
+    best_fitness_values = []  # Store best fitness values for each generation
+    average_fitness_values = []  # Store average fitness values for each generation
+    for generation in range(max_generations):
+        new_population = []
+        fitness = []
+        while len(new_population) < onemax_ga.population_size:
+            parent1, parent2 = onemax_ga.select_parents()
+            offspring1, offspring2 = onemax_ga.crossover(parent1, parent2)
+            offspring1 = onemax_ga.mutate(offspring1)
+            offspring2 = onemax_ga.mutate(offspring2)
+            new_population.extend([offspring1, offspring2])
+
+        new_population = new_population[
+            0 : onemax_ga.population_size - elitism_num
+        ]  # make sure the new_population is the same size of original population - the best individuals we will append next
+        best_individuals = onemax_ga.elitism()
+        new_population.extend(best_individuals)
+        onemax_ga.population = new_population
+
+        # Calculate best fitness value for the current generation
+        best_fitness = max(
+            onemax_ga.evaluate_fitness(individual)
+            for individual in onemax_ga.population
+        )
+        best_fitness_values.append(best_fitness)
+
+        # Calculate average fitness value for the current generation
+        average_fitness = sum(
+            onemax_ga.evaluate_fitness(individual)
+            for individual in onemax_ga.population
+        ) / len(onemax_ga.population)
+        average_fitness_values.append(average_fitness)
+
+    # Retrieve and print the best solution after running the genetic algorithm
+    best_solution = max(onemax_ga.population, key=onemax_ga.evaluate_fitness)
     print(f"Best solution: {best_solution}")
     print(f"Fitness: {onemax_ga.evaluate_fitness(best_solution)}")
+    # for individual in best_fitness_values[:10]:
+    #     print(individual)
+    # for individual in average_fitness_values[:10]:
+    #     print(individual)
+    print(len(best_fitness_values))
+    print(len(average_fitness_values))
+    # Plotting best and average fitness values over generations
+    plt.plot(range(max_generations), best_fitness_values, label="Best Fitness")
+    plt.plot(range(max_generations), average_fitness_values, label="Average Fitness")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.title("Best and Average Fitness Values Over Generations")
+    plt.legend()
+    plt.show()
+
+    ga_time = time.time() - start
+    print("GA Solution Time:", round(ga_time, 1), "Seconds")
