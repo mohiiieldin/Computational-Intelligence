@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
+import random
 
 class GeneticAlgorithm(ABC):
     """
@@ -17,7 +18,7 @@ class GeneticAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def initialize_population(self) -> List[List[int]]:
+    def initialize_population(self,length,size) -> List[List[int]]:
         """
         Initialize the population of individuals.
 
@@ -38,6 +39,7 @@ class GeneticAlgorithm(ABC):
             int: Fitness value (e.g., sum of 1s in the bitstring).
         """
         pass
+        
 
     @abstractmethod
     def select_parents(self) -> List[List[int]]:

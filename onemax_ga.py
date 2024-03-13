@@ -1,6 +1,7 @@
 from genetic_algorithm import GeneticAlgorithm
 import random
 import time
+import statistics
 from typing import List
 
 class OneMaxGA(GeneticAlgorithm):
@@ -54,7 +55,7 @@ class OneMaxGA(GeneticAlgorithm):
         Returns:
             int: Fitness value.
         """
-        #TODO 
+        return sum(chromosome)
     
     def calculate_cumulative_probabilities(self) -> List[float]:
         """
@@ -63,7 +64,14 @@ class OneMaxGA(GeneticAlgorithm):
         Returns:
             List[float]: Cumulative probabilities.
         """
-        #TODO 
+        population= self.initialize_population()
+        fitness_values = [self.evaluate_fitness(individual) for individual in population]
+        fitness_sum = sum(fitness_values)
+        probabilities = [f / fitness_sum for f in fitness_values]
+
+        cumulative = [sum(probabilities[:i + 1]) for i in range(len(probabilities))]
+        #probabilities[:i + 1] makes a sublist from begain to element at index i
+        return cumulative
 
 
     def select_parents(self) -> List[List[int]]:
@@ -91,7 +99,8 @@ class OneMaxGA(GeneticAlgorithm):
         
 
         if random.uniform(0, 1) < self.crossover_prob:
-            #TODO 
+            split_point= round(random.uniform(0, 1)*len(parent1))
+            return parent1[:split_point] + parent2[split_point:], parent2[:split_point] + parent1[split_point:]
         else:
             return parent1, parent2
     
@@ -109,7 +118,7 @@ class OneMaxGA(GeneticAlgorithm):
         mutated_chromosome = chromosome.copy()
         for i in range(self.chromosome_length):
             if random.uniform(0, 1) < self.mutation_rate:
-            #TODO  # Bit flip
+                mutated_chromosome[i] = 1 if mutated_chromosome[i] == 0 else 0      # Bit flip
         return mutated_chromosome
 
     def elitism(self) -> List[List[int]]:
@@ -120,7 +129,7 @@ class OneMaxGA(GeneticAlgorithm):
             new_population (List[List[int]]): The new population after crossover and mutation.
         """
         sorted_population = sorted(self.population, key=self.evaluate_fitness, reverse=True)
-        #TODO #return the best elitism_num 
+        return sorted_population[0],sorted_population[1]       #return the best elitism_num 
 
 
     def run(self, max_generations):
@@ -130,7 +139,7 @@ class OneMaxGA(GeneticAlgorithm):
                 parent1, parent2 = self.select_parents()
                 offspring1, offspring2 = self.crossover(parent1, parent2)
                 offspring1 = self.mutate(offspring1)
-                offspring2 = #TODO
+                offspring2 = self.mutate(offspring2)
                 new_population.extend([offspring1, offspring2])
 
             new_population = new_population[0:self.population_size-self.elitism_num] # make sure the new_population is the same size of original population - the best individuals we will append next
@@ -143,18 +152,58 @@ class OneMaxGA(GeneticAlgorithm):
         return best_solution
 
 if __name__ == "__main__":
-    population_size = 200
-    chromosome_length = 40
-    crossover_prob = 0.7
-    mutation_rate = 0.07
+    population_size = 20
+    chromosome_length = 5
+    crossover_prob = 0.6
+    mutation_rate = 0.05
     elitism_num = 2
-    max_generations = 150
-    start = time.time()
-    onemax_ga = OneMaxGA(population_size, chromosome_length,crossover_prob, mutation_rate,elitism_num)
-    best_solution = onemax_ga.run(max_generations)
-    ga_time = time.time()-start
-    print("GA Solution Time:",round(ga_time,1),'Seconds')
+    max_generations = 100
+    run=10
+
+    bestSolutionFitness_list = []
+    ga_time_list = []
+
+    for _ in range (10):
+        start = time.time()
+        onemax_ga = OneMaxGA(population_size, chromosome_length,crossover_prob, mutation_rate,elitism_num)
+        best_solution = onemax_ga.run(max_generations)
+        ga_time = time.time()-start
+        bestSolutionFitness = onemax_ga.evaluate_fitness(best_solution)
+        print("GA Solution Time:",round(ga_time,1),'Seconds')
+        print(f"Best solution: {best_solution}")
+        print(f"Fitness: {bestSolutionFitness}")
+
+        bestSolutionFitness_list.append(bestSolutionFitness)
+        ga_time_list.append(ga_time)
 
 
-    print(f"Best solution: {best_solution}")
-    print(f"Fitness: {onemax_ga.evaluate_fitness(best_solution)}")
+
+    # Analyzing bestSolutionFitness_list
+    mean_bestSolutionFitness = statistics.mean(bestSolutionFitness_list)
+    median_bestSolutionFitness = statistics.median(bestSolutionFitness_list)
+    min_bestSolutionFitness = min(bestSolutionFitness_list)
+    max_bestSolutionFitness = max(bestSolutionFitness_list)
+    stddev_bestSolutionFitness = statistics.stdev(bestSolutionFitness_list)
+
+    # Analyzing ga_time_list
+    mean_ga_time = statistics.mean(ga_time_list)
+    median_ga_time = statistics.median(ga_time_list)
+    min_ga_time = min(ga_time_list)
+    max_ga_time = max(ga_time_list)
+    stddev_ga_time = statistics.stdev(ga_time_list)
+
+    # Print the statistics
+    print("Statistics for Best Solution Fitness list:")
+    print(f"Mean: {mean_bestSolutionFitness}")
+    print(f"Median: {median_bestSolutionFitness}")
+    print(f"Min: {min_bestSolutionFitness}")
+    print(f"Max: {max_bestSolutionFitness}")
+    print(f"Standard Deviation: {stddev_bestSolutionFitness}")
+
+
+    print("\nStatistics for time list:")
+    print(f"Mean: {mean_ga_time}")
+    print(f"Median: {median_ga_time}")
+    print(f"Min: {min_ga_time}")
+    print(f"Max: {max_ga_time}")
+    print(f"Standard Deviation: {stddev_ga_time}")
